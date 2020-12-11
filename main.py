@@ -41,7 +41,7 @@ def main():
                         else:
                             message = None
                     else:
-                        message = 'Type a number to place in highlighted cell'
+                        message = TYPE
 
             if cell:
                 if event.type == pygame.KEYDOWN:

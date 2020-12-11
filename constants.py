@@ -14,6 +14,7 @@ YES = {'Yes', 'yes', 'y', 'Y'}
 OVERWRITE = """
 >> There is a number already there.
 >> Do you want to overwrite this cell? """
+TYPE = 'Type a number to place in highlighted cell'
 
 
 # Physical board space

@@ -56,6 +56,7 @@ def show_button():
     SCREEN.blit(btn, (WINDOW_SIZE[0] // 3, 1.25 * Y1 + SQUARE_SIZE * SIZE))
     SCREEN.blit(verify, (WINDOW_SIZE[0] // 3 + 10, 1.3 * Y1 + SQUARE_SIZE * SIZE))
 
+
 # validate click
 
 def validate_click(mouse_click, hard_spaces):
@@ -92,6 +93,7 @@ def convert_to_array(pos):
 def convert_to_screen(pos):
     y, x = pos
     return (X1 + x * SQUARE_SIZE, Y1 + y * SQUARE_SIZE)
+
 
 # validate type
 
