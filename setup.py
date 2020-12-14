@@ -108,6 +108,10 @@ def validate_type(key, game, cell):
                 return False
     
     except:
+        if key == 8:
+            game.set(None, cell)
+            return True
+        
         print('Type a number!')
         return False
     

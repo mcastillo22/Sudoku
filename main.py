@@ -12,7 +12,7 @@ def main():
 
     new_game = Sudoku(SIZE)
     cell = False
-    message = None
+    message = START
     running = True
 
     while running:
@@ -23,7 +23,6 @@ def main():
 
         if cell is not False:
             highlight(convert_to_screen(cell), BLUE)
-            show_text(message)
 
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -47,6 +46,7 @@ def main():
                 if event.type == pygame.KEYDOWN:
                     if validate_type(event.key, new_game, cell):
                         cell = False
+                        message = None
 
         pygame.display.update()
     

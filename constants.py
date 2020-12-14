@@ -9,15 +9,18 @@ DEBUG = True
 SIZE = 9
 SQ = int(sqrt(SIZE))
 
+
 # Console text
 YES = {'Yes', 'yes', 'y', 'Y'}
 OVERWRITE = """
 >> There is a number already there.
 >> Do you want to overwrite this cell? """
+START = 'Click on a cell to begin'
 TYPE = 'Type a number to place in highlighted cell'
 YOUWIN = 'You win!'
 BOARDINCOMPLETE = 'Board is not filled in completely!'
 INCORRECT = 'Not a solution! Try again'
+
 
 # Physical board space
 WINDOW_SIZE = (500, 500)
