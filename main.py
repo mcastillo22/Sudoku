@@ -18,7 +18,7 @@ def main():
     while running:
         clock.tick(60)
         setup_board()
-        place_numbers(new_game.get_board(), new_game.get_hardcode())
+        place_numbers(new_game.get_board(), new_game.get_hard_cells())
         show_text(message)
 
         if cell is not False:
@@ -34,7 +34,7 @@ def main():
                 location = event.pos
                 if event.button == 1:
                     cell = validate_click(location,
-                            new_game.get_hardcode())
+                            new_game.get_hard_cells())
                     if not cell:
                         if validate_button(location):
                             message = new_game.verify()

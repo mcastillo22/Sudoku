@@ -24,7 +24,7 @@ def place_numbers(board, hard_spaces):
             number = txt_obj.render(str(board[row][col]), True, BLACKCOLOR)
 
             if not can_write(row, col, hard_spaces):
-                highlight((X1 + col * SQUARE_SIZE, Y1 + row * SQUARE_SIZE), SLEET)
+                highlight((X1 + col * SQUARE_SIZE, Y1 + row * SQUARE_SIZE), GREY)
             
             SCREEN.blit(number, (2.5 * TEXT_SPACE + X1 + SQUARE_SIZE * col,
                 TEXT_SPACE + Y1 + SQUARE_SIZE * row))

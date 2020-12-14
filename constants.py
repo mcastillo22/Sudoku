@@ -15,7 +15,9 @@ OVERWRITE = """
 >> There is a number already there.
 >> Do you want to overwrite this cell? """
 TYPE = 'Type a number to place in highlighted cell'
-
+YOUWIN = 'You win!'
+BOARDINCOMPLETE = 'Board is not filled in completely!'
+INCORRECT = 'Not a solution! Try again'
 
 # Physical board space
 WINDOW_SIZE = (500, 500)
@@ -27,7 +29,7 @@ SQUARE_SIZE = 40
 
 
 # Colors
-SLEET = ( 79,  93, 115)
+GREY = ( 79,  93, 115)
 BLACKCOLOR   = (  0,   0,   0)
 WHITE        = (255, 255, 255)
 BLUE         = (194, 255, 255)
