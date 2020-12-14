@@ -9,28 +9,25 @@ class Sudoku:
     """A Sudoku Game"""
     def __init__(self, size):
         self._game_state = "UNFINISHED"
-        self._board = SudokuBoard(size)
+        self._board = SudokuBoard()
         self._CLI = False
 
     def set_CLI(self):
+        """Sets CLI play to True"""
         self._CLI = True
-
-    def is_complete(self):
-        """Determines if board is complete"""
-        return self._board.is_complete()
 
     def verify(self):
         """Verifies if the current puzzes is a solution"""
         if not self._board.is_complete():
-            print('\n\033[0;31mBoard is not filled in!\033[0m')
-            return 'Board is not filled in completely'
+            print('\n\033[0;31m' + BOARDINCOMPLETE + '\033[0m')
+            return BOARDINCOMPLETE
         solution = self._board.verify()
         if solution:
-            print('You win!')
-            return 'You win!'
+            print(YOUWIN)
+            return YOUWIN
         else:
-            print('\033[0;31mNot a solution try again!\033[0m\n')
-            return 'Not a solution! Try again'
+            print('\033[0;31m' + INCORRECT + '\033[0m\n')
+            return INCORRECT
 
     def print(self):
         """Prints board to terminal"""
@@ -38,7 +35,7 @@ class Sudoku:
             self._board.print()
 
     def convert_coord(self, position):
-        """Converts from AlphaNumeric to lists of lists"""
+        """For CLI. Converts from AlphaNumeric to lists of lists"""
         alpha = 'ABCDEFGHI'
         row = position[1] - 1
         col = alpha.index(position[0].upper())
@@ -52,7 +49,7 @@ class Sudoku:
             self._board.set(number, position)
             return True
         else:
-            if self._board.cell_is_empty(position):
+            if self._board.is_cell_empty(position):
                 self._board.set(number, position)
                 return True
             else:
@@ -78,23 +75,27 @@ class Sudoku:
     def get_board(self):
         return self._board.return_board()
 
-    def get_hardcode(self):
-        return self._board.get_hardcode()
+    def get_hard_cells(self):
+        return self._board.get_hard_cells()
+
+    def is_complete(self):
+        """Determines if board is complete"""
+        return self._board.is_complete()
+
 
 class SudokuBoard:
     """Sudoku Board of a Sudoku Game"""
-    def __init__(self, size):
-        self._size = size
-        self._square = int(sqrt(size))
+    def __init__(self):
+        self._size = SIZE
+        self._square = SQ
         # self._board = \
         #     [[None for x in range(size)] for y in range(size)]
-        self._square_size = self._size * 4 + 4
         self.initiate_new()
-        self._hardcode = self.no_overwrite()
+        self._hard_cells = self.no_overwrite()
     
-    def get_hardcode(self):
+    def get_hard_cells(self):
         """Returns dictionary of spaces that cannot be overwritten"""
-        return self._hardcode
+        return self._hard_cells
 
     def no_overwrite(self):
         """Determines which cells cannot be overwritten"""
@@ -108,9 +109,10 @@ class SudokuBoard:
 
     def print(self):
         """Prints board to terminal"""
+        square_size = self._size * 4 + 4
         def print_horizontal():
             print('\033[1;34m╠\033[0m' +
-                '\033[1;34m═\033[0m' * (self._square_size - 5) +
+                '\033[1;34m═\033[0m' * (square_size - 5) +
                 '\033[1;34m╣\033[0m')
         
         def print_alpha():
@@ -180,7 +182,7 @@ class SudokuBoard:
                     return False
         return True
 
-    def cell_is_empty(self, position):
+    def is_cell_empty(self, position):
         """Determines if the cell at the passed position is empty or not"""
         x = position[0]
         y = position[1]
@@ -197,7 +199,7 @@ class SudokuBoard:
     def verify(self):
         """Verifies if the user solution is correct"""
         return self.verify_row() and self.verify_col() \
-            and self.verify_square()
+            and self.verify_region()
 
     def verify_row(self):
         """Checks current puzzle is a proper solution for all rows"""        
@@ -221,11 +223,10 @@ class SudokuBoard:
         
         return True
     
-    def verify_square(self):
+    def verify_region(self):
         """Verifies current puzzle is a solution for all squares"""
         sq_positions = [0] + \
-            [x for x in range(2, self._size) if \
-                x % self._square == 0]
+            [x for x in range(2, self._size) if x % self._square == 0]
         if DEBUG:
             print(sq_positions)
         for spr in sq_positions:
@@ -242,3 +243,64 @@ class SudokuBoard:
 
     def return_board(self):
         return self._board
+
+
+class SudokuGraph:
+    """Graph representing the Sudoku Board"""
+    def __init__(self):
+        self._regions = [x for x in range(SIZE + 1) if x % SQ == 0]
+        self._all = {}
+        self.connect()
+
+    def connect(self):
+        """Creates the graph as a dictionary"""
+        for x in range(SIZE):
+            for y in range(SIZE):
+                adjacent = self.connect_row((x,y))
+                adjacent = adjacent.union(self.connect_col((x,y)))
+                adjacent = adjacent.union(self.connect_region((x,y)))
+                self._all[(x,y)] = adjacent
+ 
+    def connect_col(self, node):
+        """Connects all nodes in a column"""
+        col = node[0]
+        connect = set()
+        for row in range(SIZE):
+            if (row, col) != node:
+                connect.add((row,col))
+        return connect
+
+    def connect_row(self, node):
+        """Connects all nodes in a row"""
+        row = node[0]
+        connect = set()
+        for col in range(SIZE):
+            if (row, col) != node:
+                connect.add((row,col))
+        return connect
+
+    def connect_region(self, node):
+        """Connects the nodes in a region"""
+        connect = set()
+        region_x, region_y = -5, -5
+
+        for x in range(SQ):
+            if node[0] < self._regions[x]:
+                region_x = self._regions[x-1]
+                break
+
+        for y in range(SQ):
+            if node[1] < self._regions[y]:
+                region_y = self._regions[y-1]
+                break
+
+        for row in range(SQ):
+            for col in range(SQ):
+                if (region_x + row,region_y + col) != node:
+                    connect.add((region_x + row,region_y + col))
+        
+        return connect
+
+
+tro = SudokuGraph()
+print()
