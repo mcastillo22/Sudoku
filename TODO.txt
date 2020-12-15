@@ -1,2 +1,2 @@
-- As a user, I want to be able to delete a cell that I've filled out
-- As a developer, I want to solve a given puzzle
+- As a user I want to be able to reset the puzzle
+    - add button to GUI
