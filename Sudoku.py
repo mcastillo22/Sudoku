@@ -11,6 +11,7 @@ class Sudoku:
         self._game_state = "UNFINISHED"
         self._board = SudokuBoard()
         self._original = self._board.return_board()
+        self._given = self._board.get_given()
         self._CLI = False
 
     def set_CLI(self):
@@ -76,8 +77,8 @@ class Sudoku:
     def get_board(self):
         return self._board.return_board()
 
-    def get_hard_cells(self):
-        return self._board.get_hard_cells()
+    def get_given(self):
+        return self._given
 
     def is_complete(self):
         """Determines if board is complete"""
@@ -95,6 +96,7 @@ class Sudoku:
             self._board = SudokuBoard(graph.return_board())
         return 'Completed Puzzle:'
 
+
 class SudokuBoard:
     """Sudoku Board of a Sudoku Game"""
     def __init__(self, board=None):
@@ -103,14 +105,14 @@ class SudokuBoard:
 
         if board is None:
             self.initiate_new()
-            self._hard_cells = self.no_overwrite()
+            self._given = self.no_overwrite()
         else:
             self._board = board
-            self._hard_cells = set()
+            self._given = set()
     
-    def get_hard_cells(self):
+    def get_given(self):
         """Returns dictionary of spaces that cannot be overwritten"""
-        return self._hard_cells
+        return self._given
 
     def no_overwrite(self):
         """Determines which cells cannot be overwritten"""

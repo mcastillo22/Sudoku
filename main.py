@@ -18,8 +18,8 @@ def main():
     while running:
         clock.tick(60)
         setup_board()
-        place_numbers(new_game.get_board(), new_game.get_hard_cells())
-        show_text(message)
+        place_numbers(new_game.get_board(), new_game.get_given())
+        show_message(message)
 
         if cell is not False:
             highlight(convert_to_screen(cell), BLUE)
@@ -33,14 +33,9 @@ def main():
                 location = event.pos
                 if event.button == 1:
                     cell = validate_click(location,
-                            new_game.get_hard_cells())
+                            new_game.get_given())
                     if not cell:
-                        if validate_button(location) == 1:
-                            message = new_game.verify()
-                        elif validate_button(location) == 2:
-                            message = new_game.solve()
-                        else:
-                            message = None
+                        message = validate_button(location, new_game)
                     else:
                         message = TYPE
 

@@ -16,7 +16,7 @@ def highlight(pos, color):
     square.fill(color)
     SCREEN.blit(square, (pos))
 
-def place_numbers(board, hard_spaces):
+def place_numbers(board, given_spaces):
     txt_obj = pygame.font.SysFont('Calibri', 28)
     for row in range(SIZE):
         for col in range(SIZE):
@@ -24,7 +24,8 @@ def place_numbers(board, hard_spaces):
                 continue
             number = txt_obj.render(str(board[row][col]), True, BLACKCOLOR)
 
-            if not can_write(row, col, hard_spaces):
+            # Place given numbers with a grey backgroung
+            if not can_write(row, col, given_spaces):
                 highlight((X1 + col * SQUARE_SIZE, Y1 + row * SQUARE_SIZE), GREY)
             
             SCREEN.blit(number, (2.5 * TEXT_SPACE + X1 + SQUARE_SIZE * col,
@@ -42,9 +43,9 @@ def draw_grid():
         pygame.draw.line(SCREEN, BLACKCOLOR, (n, Y1),
             (n, Y1 + SQUARE_SIZE * SIZE), 1)
 
-def show_text(phrase):
+def show_message(message):
     txt_obj = pygame.font.SysFont('Calibri', 24)
-    turn = txt_obj.render(phrase, True, BLACKCOLOR)
+    turn = txt_obj.render(message, True, BLACKCOLOR)
     SCREEN.blit(turn, (X1 // 2, Y1 // 3))
 
 def show_button(message, btn_loc, txt_loc):
@@ -60,22 +61,22 @@ def show_button(message, btn_loc, txt_loc):
 
 # Validate user clicks on grid
 
-def validate_click(mouse_click, hard_spaces):
+def validate_click(mouse_click, given_spaces):
     mouse_y, mouse_x = mouse_click
 
     coord_x, coord_y = on_grid(mouse_x, mouse_y)
     in_board = coord_x is not None and coord_y is not None
 
-    if in_board and can_write(coord_x, coord_y, hard_spaces):
+    if in_board and can_write(coord_x, coord_y, given_spaces):
         if DEBUG:
             print(coord_x, coord_y)
         return (coord_x, coord_y)
 
     return False
 
-def can_write(x, y, hard_spaces):
+def can_write(x, y, given_spaces):
     try:
-        if y in hard_spaces[x]:
+        if y in given_spaces[x]:
             return False
     except:
         return True
@@ -123,15 +124,15 @@ def validate_type(key, game, cell):
 
 # Verify buttons
 
-def validate_button(location):
-    verify = pygame.Rect(VBTN_LOC[0], VBTN_LOC[1], 4 * SQUARE_SIZE, SQUARE_SIZE)
-    solve = pygame.Rect(SBTN_LOC[0], SBTN_LOC[1], 4 * SQUARE_SIZE, SQUARE_SIZE)
+def validate_button(location, game):
+    verify = pygame.Rect(VBTN_LOC[0], VBTN_LOC[1], BTN_SIZE[0], BTN_SIZE[1])
+    solve = pygame.Rect(SBTN_LOC[0], SBTN_LOC[1], BTN_SIZE[0], BTN_SIZE[1])
 
     if verify.collidepoint(location):
         print('Verifying')
-        return 1    
+        return str(game.verify())
     if solve.collidepoint(location):
         print('Solving')
-        return 2
+        return str(game.solve())
 
-    return False
+    return None
