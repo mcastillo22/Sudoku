@@ -2,12 +2,13 @@ import pygame
 from constants import *
 
 
-# setup board
+# Setup board visuals
 
 def setup_board():
     SCREEN.fill(WHITE)
     draw_grid()
-    show_button()
+    show_button('Verify Puzzle', VBTN_LOC, VTXT_LOC)
+    show_button('Solve Puzzle', SBTN_LOC, STXT_LOC)
 
 def highlight(pos, color):
     square = pygame.Surface((SQUARE_SIZE, SQUARE_SIZE))
@@ -46,18 +47,18 @@ def show_text(phrase):
     turn = txt_obj.render(phrase, True, BLACKCOLOR)
     SCREEN.blit(turn, (X1 // 2, Y1 // 3))
 
-def show_button():
+def show_button(message, btn_loc, txt_loc):
     txt_obj = pygame.font.SysFont('Calibri', 24)
-    verify = txt_obj.render('Verify Puzzle', True, BLACKCOLOR)
+    text = txt_obj.render(message, True, BLACKCOLOR)
 
     btn = pygame.Surface((4*SQUARE_SIZE, SQUARE_SIZE))
     btn.fill(BLUE)
 
-    SCREEN.blit(btn, (WINDOW_SIZE[0] // 3, 1.25 * Y1 + SQUARE_SIZE * SIZE))
-    SCREEN.blit(verify, (WINDOW_SIZE[0] // 3 + 10, 1.3 * Y1 + SQUARE_SIZE * SIZE))
+    SCREEN.blit(btn, btn_loc)
+    SCREEN.blit(text, txt_loc)
 
 
-# validate click
+# Validate user clicks on grid
 
 def validate_click(mouse_click, hard_spaces):
     mouse_y, mouse_x = mouse_click
@@ -73,8 +74,11 @@ def validate_click(mouse_click, hard_spaces):
     return False
 
 def can_write(x, y, hard_spaces):
-    if y in hard_spaces[x]:
-        return False
+    try:
+        if y in hard_spaces[x]:
+            return False
+    except:
+        return True
     return True
 
 def on_grid(x, y):
@@ -95,7 +99,7 @@ def convert_to_screen(pos):
     return (X1 + x * SQUARE_SIZE, Y1 + y * SQUARE_SIZE)
 
 
-# validate type
+# Validate user typing
 
 def validate_type(key, game, cell):
     try:
@@ -117,12 +121,17 @@ def validate_type(key, game, cell):
     
     return True
 
-# Verify button click
+# Verify buttons
 
 def validate_button(location):
-    box = pygame.Rect(WINDOW_SIZE[0] // 3, 1.25 * Y1 + SQUARE_SIZE * SIZE,
-        4 * SQUARE_SIZE, SQUARE_SIZE)
-    if box.collidepoint(location):
+    verify = pygame.Rect(VBTN_LOC[0], VBTN_LOC[1], 4 * SQUARE_SIZE, SQUARE_SIZE)
+    solve = pygame.Rect(SBTN_LOC[0], SBTN_LOC[1], 4 * SQUARE_SIZE, SQUARE_SIZE)
+
+    if verify.collidepoint(location):
         print('Verifying')
-        return True    
+        return 1    
+    if solve.collidepoint(location):
+        print('Solving')
+        return 2
+
     return False

@@ -93,7 +93,7 @@ class Sudoku:
             if DEBUG:
                 graph.print()
             self._board = SudokuBoard(graph.return_board())
-
+        return 'Completed Puzzle:'
 
 class SudokuBoard:
     """Sudoku Board of a Sudoku Game"""
@@ -103,10 +103,10 @@ class SudokuBoard:
 
         if board is None:
             self.initiate_new()
+            self._hard_cells = self.no_overwrite()
         else:
             self._board = board
-
-        self._hard_cells = self.no_overwrite()
+            self._hard_cells = set()
     
     def get_hard_cells(self):
         """Returns dictionary of spaces that cannot be overwritten"""
@@ -389,8 +389,3 @@ class Node:
         self.value = None
         self.adjacent = set()
         self.candidates = set()
-
-
-game = Sudoku(SIZE)
-game.solve()
-game.print()

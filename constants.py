@@ -31,6 +31,14 @@ Y1 = 70
 X1 = 70
 SQUARE_SIZE = 40
 
+# Verify Button
+VBTN_LOC = (WINDOW_SIZE[0] // 6, 1.25 * Y1 + SQUARE_SIZE * SIZE)
+VTXT_LOC = (WINDOW_SIZE[0] // 6 + 10, 1.3 * Y1 + SQUARE_SIZE * SIZE)
+
+# Solve Button
+SBTN_LOC = (WINDOW_SIZE[0] // 2, 1.25 * Y1 + SQUARE_SIZE * SIZE)
+STXT_LOC = (WINDOW_SIZE[0] // 2 + 10, 1.3 * Y1 + SQUARE_SIZE * SIZE)
+
 
 # Colors
 GREY = ( 79,  93, 115)

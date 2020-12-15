@@ -2,7 +2,7 @@ import pygame, sys
 from pygame.locals import  * 
 from Sudoku import Sudoku
 from constants import *
-from setup import *
+from functions import *
 
 
 def main():
@@ -35,8 +35,10 @@ def main():
                     cell = validate_click(location,
                             new_game.get_hard_cells())
                     if not cell:
-                        if validate_button(location):
+                        if validate_button(location) == 1:
                             message = new_game.verify()
+                        elif validate_button(location) == 2:
+                            message = new_game.solve()
                         else:
                             message = None
                     else:
