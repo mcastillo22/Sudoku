@@ -7,9 +7,10 @@ from random import randint
 
 class Sudoku:
     """A Sudoku Game"""
-    def __init__(self, size):
+    def __init__(self, size=None):
         self._game_state = "UNFINISHED"
         self._board = SudokuBoard()
+        self._original = self._board.return_board()
         self._CLI = False
 
     def set_CLI(self):
@@ -81,6 +82,12 @@ class Sudoku:
     def is_complete(self):
         """Determines if board is complete"""
         return self._board.is_complete()
+        
+    def solve(self):
+        """"""
+        #TODO
+        graph = SudokuGraph(self._original)
+        return graph
 
 
 class SudokuBoard:
@@ -225,12 +232,8 @@ class SudokuBoard:
     
     def verify_region(self):
         """Verifies current puzzle is a solution for all squares"""
-        sq_positions = [0] + \
-            [x for x in range(2, self._size) if x % self._square == 0]
-        if DEBUG:
-            print(sq_positions)
-        for spr in sq_positions:
-            for spc in sq_positions:
+        for spr in REGIONS[:-1]:
+            for spc in REGIONS[:-1]:
                 sq = set()
                 for row in range(self._square):
                     for col in range(self._square):
@@ -247,60 +250,113 @@ class SudokuBoard:
 
 class SudokuGraph:
     """Graph representing the Sudoku Board"""
-    def __init__(self):
-        self._regions = [x for x in range(SIZE + 1) if x % SQ == 0]
+    def __init__(self, board):
+        self._board = board
         self._all = {}
-        self.connect()
+        self.create()
 
-    def connect(self):
-        """Creates the graph as a dictionary"""
+    def create(self):
+        """Creates dictionary of each cell as a key"""
         for x in range(SIZE):
             for y in range(SIZE):
-                adjacent = self.connect_row((x,y))
-                adjacent = adjacent.union(self.connect_col((x,y)))
-                adjacent = adjacent.union(self.connect_region((x,y)))
-                self._all[(x,y)] = adjacent
- 
-    def connect_col(self, node):
+                new_node = Node()
+                self._all[(x,y)] = new_node
+                new_node.location = (x,y)
+                new_node.adjacent, new_node.candidates = self.connect((x,y))
+
+                if len(new_node.candidates) == 1:
+                    new_node.value = new_node.candidates.pop()
+
+                if self._board[x][y] is not None:
+                    new_node.value = self._board[x][y]
+                    new_node.candidates = set()
+
+    def connect(self, location):
+        """Returns the set of all nodes the node is adjacent to"""
+        adjacent = self.connect_row(location)[0] | \
+            self.connect_col(location)[0] | \
+            self.connect_region(location)[0]
+
+        not_options = set([x for x in range(1, SIZE + 1)]) - \
+            self.connect_row(location)[1] - \
+            self.connect_col(location)[1] - \
+            self.connect_region(location)[1]
+
+        return adjacent, not_options
+
+    def connect_col(self, location):
         """Connects all nodes in a column"""
-        col = node[0]
+        col = location[1]
         connect = set()
+        no_option = set()
+
         for row in range(SIZE):
-            if (row, col) != node:
+            if (row, col) != location:
                 connect.add((row,col))
-        return connect
+                if self._board[row][col] is not None:
+                    no_option.add(self._board[row][col])
 
-    def connect_row(self, node):
+        return connect, no_option
+
+    def connect_row(self, location):
         """Connects all nodes in a row"""
-        row = node[0]
+        row = location[0]
         connect = set()
-        for col in range(SIZE):
-            if (row, col) != node:
-                connect.add((row,col))
-        return connect
+        no_option = set()
 
-    def connect_region(self, node):
+        for col in range(SIZE):
+            if (row, col) != location:
+                connect.add((row,col))
+                if self._board[row][col] is not None:
+                    no_option.add(self._board[row][col])
+
+        return connect, no_option
+
+    def connect_region(self, location):
         """Connects the nodes in a region"""
         connect = set()
-        region_x, region_y = -5, -5
+        no_option = set()
+        region_x, region_y = None, None
 
-        for x in range(SQ):
-            if node[0] < self._regions[x]:
-                region_x = self._regions[x-1]
+        for x in range(1, SQ+2):
+            if location[0] < REGIONS[x]:
+                region_x = REGIONS[x-1]
                 break
 
-        for y in range(SQ):
-            if node[1] < self._regions[y]:
-                region_y = self._regions[y-1]
+        for y in range(1, SQ+2):
+            if location[1] < REGIONS[y]:
+                region_y = REGIONS[y-1]
                 break
 
         for row in range(SQ):
             for col in range(SQ):
-                if (region_x + row,region_y + col) != node:
+                if (region_x + row, region_y + col) != location:
                     connect.add((region_x + row,region_y + col))
-        
-        return connect
+                    if self._board[region_x + row][region_y + col] \
+                        is not None:
+                        no_option.add(self._board[region_x + row][region_y + col])
+
+        return connect, no_option
+
+    def solve(self):
+        """"""
+        #TODO
+        for coord in self._all:
+            node = self._all[coord]
+            x,y = node.location
+            self._board[x][y] = node.value
+
+class Node:
+    """A cell of the Sudoku board as a node"""
+    def __init__(self):
+        self.location = None
+        self.value = None
+        self.adjacent = set()
+        self.candidates = set()
 
 
-tro = SudokuGraph()
+
+game = Sudoku(SIZE)
+choo = game.solve()
+choo.solve()
 print()

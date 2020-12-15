@@ -8,6 +8,7 @@ DEBUG = True
 # Game Size
 SIZE = 9
 SQ = int(sqrt(SIZE))
+REGIONS = [x for x in range(SIZE + 1) if x % SQ == 0]
 
 
 # Console text
