@@ -84,20 +84,28 @@ class Sudoku:
         return self._board.is_complete()
         
     def solve(self):
-        """"""
-        #TODO
+        """Solves through iteration"""
         graph = SudokuGraph(self._original)
-        return graph
+        self._board = SudokuBoard(graph.return_board())
+        while not self.is_complete():
+            graph.solve()
+            graph.create()
+            if DEBUG:
+                graph.print()
+            self._board = SudokuBoard(graph.return_board())
 
 
 class SudokuBoard:
     """Sudoku Board of a Sudoku Game"""
-    def __init__(self):
+    def __init__(self, board=None):
         self._size = SIZE
         self._square = SQ
-        # self._board = \
-        #     [[None for x in range(size)] for y in range(size)]
-        self.initiate_new()
+
+        if board is None:
+            self.initiate_new()
+        else:
+            self._board = board
+
         self._hard_cells = self.no_overwrite()
     
     def get_hard_cells(self):
@@ -161,18 +169,6 @@ class SudokuBoard:
             [None, None, None, 3, 9, None, None, None, 8],
             [None, 2, None, None, 5, 7, None, None, None],
             [1, None, None, 2, None, 4, None, None, None]]
-
-    def initiate_complete(self):
-        """For testing purposes. Fills in the entire board"""
-        self._board = [[9, 4, 8, 6, 7, 2, 3, 5, 1],
-            [2, 7, 5, 8, 3, 1, 4, 6, 9],
-            [6, 3, 1, 5, 4, 9, 2, 8, 7],
-            [3, 8, 7, 4, 1, 5, 6, 9, 2],
-            [4, 9, 2, 7, 6, 3, 8, 1, 5],
-            [5, 1, 6, 9, 2, 8, 7, 3, 4],
-            [7, 5, 4, 3, 9, 6, 1, 2, 8],
-            [8, 2, 3, 1, 5, 7, 9, 4, 6],
-            [1, 6, 9, 2, 8, 4, 5, 7, 3]]  
 
     def random_fill(self):
         """Randomly fills in empty squares"""
@@ -339,12 +335,52 @@ class SudokuGraph:
         return connect, no_option
 
     def solve(self):
-        """"""
-        #TODO
+        """Updates board with new node values"""
         for coord in self._all:
             node = self._all[coord]
             x,y = node.location
             self._board[x][y] = node.value
+
+    def print(self):
+        """Prints board to terminal"""
+        square_size = SIZE * 4 + 4
+        def print_horizontal():
+            print('\033[1;34m╠\033[0m' +
+                '\033[1;34m═\033[0m' * (square_size - 5) +
+                '\033[1;34m╣\033[0m')
+        
+        def print_alpha():
+            alpha = 'ABCDEFGHI'
+            print(' ', end='')
+            for a in alpha:
+                print(f' {a} ', end=' ')
+            print()
+
+        row_count = 0
+        print_alpha()
+        print_horizontal()
+        for row in self._board:
+            col_count = 0
+            row_count += 1
+            print('\033[1;34m║\033[0m', end='')
+
+            for col in row:
+                col_count += 1
+                if col is None:
+                    col = ' '
+                if col_count % SQ == 0:
+                    print(f' {col} ', end='\033[1;34m║\033[0m')
+                else:
+                    print(f' {col} ', end='\033[1;34m│\033[0m')
+            print(f' {row_count}')
+
+            if row_count % SQ == 0:
+                print_horizontal()
+
+    def return_board(self):
+        """Returns board of the object"""
+        return self._board
+
 
 class Node:
     """A cell of the Sudoku board as a node"""
@@ -355,8 +391,6 @@ class Node:
         self.candidates = set()
 
 
-
 game = Sudoku(SIZE)
-choo = game.solve()
-choo.solve()
-print()
+game.solve()
+game.print()
